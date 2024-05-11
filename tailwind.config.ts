@@ -3,11 +3,11 @@ import type { Config } from "tailwindcss"
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -52,6 +52,10 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        maincolor: {
+          DEFAULT: "#68A2F9",
+          foreground: "#68A2F9",
+        },
       },
       keyframes: {
         "accordion-down": {
@@ -67,9 +71,22 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      // gridTemplateColumns: {
+      //   sectionLg: "1fr 6fr",
+      //   sectionXl: "1fr 4fr",
+      //   section2Xl: "1fr 5fr",
+      // },
+      gridTemplateColumns: {
+        sectionLg: "240px 18fr",
+        sectionXl: "240px 24fr",
+        section2Xl: "240px 28fr",
+        sectionLgExtraContainer: "1fr 6fr 9fr",
+        sectionXlExtraContainer: "70px 8fr 14fr",
+        section2XlExtraContainer: "70px 8fr 20fr",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
 export default config

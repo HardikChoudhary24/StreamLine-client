@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Oswald, Work_Sans } from "next/font/google";
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import TanstackQueryProvider from "./_providers/TanstackQueryProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
-
-
+const oswald = Oswald({
+  subsets: ["latin"],
+  variable: "--font-oswald",
+});
+export const work_sans_slab = Work_Sans({
+  subsets: ["latin"],
+  weight: ["400", "200", "300", "500", "600", "700"],
+  style: "normal",
+  variable: "--font-work_sans",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,9 +30,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient();
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="overflow-hidden no-scrollbar">
+      <body className={work_sans_slab.className}>
+        <TanstackQueryProvider>{children}</TanstackQueryProvider>
+        <Toaster />
+      </body>
     </html>
   );
 }

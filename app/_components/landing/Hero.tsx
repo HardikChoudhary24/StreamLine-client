@@ -4,15 +4,15 @@ import { Particles } from "./particles";
 import ReactWrapBalancer from "react-wrap-balancer";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 import { useRouter } from "next/router";
 
 export const Hero: React.FC = () => {
   return (
     <section>
+      <Particles className="absolute inset-0 -z-10 " />
       <div className="relative max-w-6xl min-h-screen px-4 mx-auto sm:px-6">
         {/* Particles animation */}
-        <Particles className="absolute inset-0 -z-10 " />
 
         <Navbar />
 

@@ -1,4 +1,4 @@
-import { Hero } from "@/app/components/landing/Hero";
+import { Hero } from "@/app/_components/landing/Hero";
 import Image from "next/image";
 
 export default function Home() {

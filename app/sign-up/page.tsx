@@ -1,6 +1,7 @@
+"use client";
 import React from "react";
-import { Particles } from "../components/landing/particles";
-import AuthenticationModal from "../components/AuthenticationModal";
+import { Particles } from "../_components/landing/particles";
+import AuthenticationModal from "../_components/AuthenticationModal";
 
 const Signup = () => {
   return (

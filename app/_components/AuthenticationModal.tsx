@@ -7,26 +7,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { register } from "module";
 import { usePathname, useRouter } from "next/navigation";
+import useCreateUser from "@/hooks/useCreateUser";
+import toast from "react-hot-toast";
+import useLogin from "@/hooks/useLogin";
+import Cookies from "universal-cookie";
+
 const schema = z.object({
   email: z.string().email("Email address must be a valid email address."),
   password: z
     .string()
     .min(8, "Your password must contain 8 or more characters."),
-  username: z.string().optional(),
+  userName: z.string().optional(),
+  name: z.string().optional(),
 });
 
 type FormFields = z.infer<typeof schema>;
 
 type formFields = {
   label: string;
-  registerName: "email" | "password" | "username";
+  registerName: "email" | "password" | "userName" | "name";
 };
 const signInFields: formFields[] = [
   { label: "Email", registerName: "email" },
   { label: "Password", registerName: "password" },
 ];
 const signUpFields: formFields[] = [
-  { label: "Username", registerName: "username" },
+  { label: "Name", registerName: "name" },
+  { label: "Username", registerName: "userName" },
   ...signInFields,
 ];
 
@@ -34,7 +41,10 @@ const AuthenticationModal = () => {
   const pathName = usePathname();
   const router = useRouter();
   const [formFields, setFormFields] = useState<
-    | { label: string; registerName: "email" | "password" | "username" }[]
+    | {
+        label: string;
+        registerName: "email" | "password" | "userName" | "name";
+      }[]
     | undefined
   >(undefined);
 
@@ -53,9 +63,45 @@ const AuthenticationModal = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({ resolver: zodResolver(schema) });
 
+  const { mutate: createUser, isPending, data: signupData } = useCreateUser();
+  const { mutate: loginUser,isPending:loginPending, data: loginData } = useLogin();
+
   const onSubmit: SubmitHandler<FormFields> = (formData) => {
-    console.log(formData);
+    if (pathName === "/sign-up") {
+      const { name, userName, email, password } = formData;
+      if (name && userName && email && password) {
+        toast.loading("Creating account", { id: "sign-up" });
+        createUser({ name, userName, email, password });
+      }
+    }
+    if (pathName === "/sign-in") {
+      const { email, password } = formData;
+      if (email && password) {
+        toast.loading("Verifying your identity 🧐",{id:"login"})
+        loginUser({ email, password });
+      }
+    }
   };
+
+  useEffect(() => {
+    if (signupData && !signupData.createUser?.userExist) {
+      toast.success("Succesfully signed up!", { id: "sign-up" });
+      router.push("/sign-in");
+    } else if (signupData && signupData.createUser?.userExist) {
+      toast.error("Email already registered!", { id: "sign-up" });
+    }
+  }, [signupData]);
+
+  useEffect(() => {
+    if (loginData && loginData.authenticate?.success) {
+      const cookies = new Cookies();
+      cookies.set("access_token", loginData.authenticate.token);
+      toast.success("Verified", { id: "login" });
+      router.replace(loginData.authenticate.url!)
+    } else if (loginData && !loginData.authenticate?.success) {
+      toast.error("Incorrect email or password.");
+    }
+  }, [loginData]);
 
   return (
     <div className="flex flex-col justify-start items-start rounded-xl bg-white px-5 py-10 w-[75%] sm:w-[45%] md:w-[35%] gap-y-4">
@@ -96,7 +142,9 @@ const AuthenticationModal = () => {
                 {formField.label}
               </label>
               <input
-                type={formField.registerName==="password"?"password":"text"}
+                type={
+                  formField.registerName === "password" ? "password" : "text"
+                }
                 id={formField.registerName}
                 className={`text-sm rounded-md outline-none border border-1 border-[#d8d6d6] text-black px-2 w-full py-2 ${
                   errors[formField.registerName]?.message
@@ -124,7 +172,11 @@ const AuthenticationModal = () => {
         </button>
       </form>
       <div className="flex justify-start items-center gap-x-1">
-        <p className="text-[#555454] text-xs">Have an account?</p>
+        <p className="text-[#555454] text-xs">
+          {pathName === "/sign-up"
+            ? " Have an account?"
+            : "Don't have an account?"}
+        </p>
         <span
           className="text-xs font-medium cursor-pointer"
           onClick={() =>
